@@ -14,11 +14,12 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/movieCatalo
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  res.status(500);
+  res.send({ message: 'Something went wrong!', error: err.message });
 });
 
 const movieRoutes = require("./routes/movies");
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/users");
 const commentRoutes = require("./routes/comments");
 
 app.use("/movies", movieRoutes);

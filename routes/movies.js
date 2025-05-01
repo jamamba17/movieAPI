@@ -6,9 +6,10 @@ const { authenticate, isAdmin } = require('../middleware/auth');
 router.get('/', async (req, res) => {
   try {
     const movies = await Movie.find().select('-comments');
-    res.json(movies);
+    res.send(movies);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching movies', error: error.message });
+    res.status(500);
+    res.send({ message: 'Error fetching movies', error: error.message });
   }
 });
 
@@ -17,15 +18,18 @@ router.get('/:id', async (req, res) => {
     const movie = await Movie.findById(req.params.id);
     
     if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+      res.status(404);
+      return res.send({ message: 'Movie not found' });
     }
     
-    res.json(movie);
+    res.send(movie);
   } catch (error) {
     if (error.kind === 'ObjectId') {
-      return res.status(400).json({ message: 'Invalid movie ID format' });
+      res.status(400);
+      return res.send({ message: 'Invalid movie ID format' });
     }
-    res.status(500).json({ message: 'Error fetching movie', error: error.message });
+    res.status(500);
+    res.send({ message: 'Error fetching movie', error: error.message });
   }
 });
 
@@ -43,12 +47,14 @@ router.post('/', authenticate, isAdmin, async (req, res) => {
     
     const savedMovie = await movie.save();
     
-    res.status(201).json({
+    res.status(201);
+    res.send({
       message: 'Movie created successfully',
       movie: savedMovie
     });
   } catch (error) {
-    res.status(400).json({ message: 'Error creating movie', error: error.message });
+    res.status(400);
+    res.send({ message: 'Error creating movie', error: error.message });
   }
 });
 
@@ -59,7 +65,8 @@ router.put('/:id', authenticate, isAdmin, async (req, res) => {
     const movie = await Movie.findById(req.params.id);
     
     if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+      res.status(404);
+      return res.send({ message: 'Movie not found' });
     }
     
     if (title) movie.title = title;
@@ -70,15 +77,17 @@ router.put('/:id', authenticate, isAdmin, async (req, res) => {
     
     const updatedMovie = await movie.save();
     
-    res.json({
+    res.send({
       message: 'Movie updated successfully',
       movie: updatedMovie
     });
   } catch (error) {
     if (error.kind === 'ObjectId') {
-      return res.status(400).json({ message: 'Invalid movie ID format' });
+      res.status(400);
+      return res.send({ message: 'Invalid movie ID format' });
     }
-    res.status(400).json({ message: 'Error updating movie', error: error.message });
+    res.status(400);
+    res.send({ message: 'Error updating movie', error: error.message });
   }
 });
 
@@ -87,17 +96,20 @@ router.delete('/:id', authenticate, isAdmin, async (req, res) => {
     const movie = await Movie.findById(req.params.id);
     
     if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+      res.status(404);
+      return res.send({ message: 'Movie not found' });
     }
     
     await movie.deleteOne();
     
-    res.json({ message: 'Movie deleted successfully' });
+    res.send({ message: 'Movie deleted successfully' });
   } catch (error) {
     if (error.kind === 'ObjectId') {
-      return res.status(400).json({ message: 'Invalid movie ID format' });
+      res.status(400);
+      return res.send({ message: 'Invalid movie ID format' });
     }
-    res.status(500).json({ message: 'Error deleting movie', error: error.message });
+    res.status(500);
+    res.send({ message: 'Error deleting movie', error: error.message });
   }
 });
 

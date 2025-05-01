@@ -8,13 +8,15 @@ router.post('/:movieId', authenticate, async (req, res) => {
     const { text } = req.body;
     
     if (!text || text.trim() === '') {
-      return res.status(400).json({ message: 'Comment text is required' });
+      res.status(400);
+      return res.send({ message: 'Comment text is required' });
     }
     
     const movie = await Movie.findById(req.params.movieId);
     
     if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+      res.status(404);
+      return res.send({ message: 'Movie not found' });
     }
     
     const newComment = {
@@ -25,15 +27,18 @@ router.post('/:movieId', authenticate, async (req, res) => {
     movie.comments.push(newComment);
     await movie.save();
     
-    res.status(201).json({
+    res.status(201);
+    res.send({
       message: 'Comment added successfully',
       comment: movie.comments[movie.comments.length - 1]
     });
   } catch (error) {
     if (error.kind === 'ObjectId') {
-      return res.status(400).json({ message: 'Invalid movie ID format' });
+      res.status(400);
+      return res.send({ message: 'Invalid movie ID format' });
     }
-    res.status(500).json({ message: 'Error adding comment', error: error.message });
+    res.status(500);
+    res.send({ message: 'Error adding comment', error: error.message });
   }
 });
 
@@ -44,15 +49,18 @@ router.get('/:movieId', async (req, res) => {
       .populate('comments.user', 'email');
     
     if (!movie) {
-      return res.status(404).json({ message: 'Movie not found' });
+      res.status(404);
+      return res.send({ message: 'Movie not found' });
     }
     
-    res.json(movie.comments);
+    res.send(movie.comments);
   } catch (error) {
     if (error.kind === 'ObjectId') {
-      return res.status(400).json({ message: 'Invalid movie ID format' });
+      res.status(400);
+      return res.send({ message: 'Invalid movie ID format' });
     }
-    res.status(500).json({ message: 'Error fetching comments', error: error.message });
+    res.status(500);
+    res.send({ message: 'Error fetching comments', error: error.message });
   }
 });
 
